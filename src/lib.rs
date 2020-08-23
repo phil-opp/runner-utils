@@ -1,12 +1,13 @@
-
+use process::{Command, ExitStatus};
 use std::{io, path::Path, process, time::Duration};
 use thiserror::Error;
 use wait_timeout::ChildExt;
-use process::{ExitStatus, Command};
 
 pub fn binary_kind(binary_path: &Path) -> BinaryKind {
     let exe_parent = binary_path.parent();
-    let parent_dir_name = exe_parent.and_then(|p| p.file_name()).and_then(|name| name.to_str());
+    let parent_dir_name = exe_parent
+        .and_then(|p| p.file_name())
+        .and_then(|name| name.to_str());
     match parent_dir_name {
         Some("deps") => BinaryKind::Test,
         Some(name) if name.starts_with("rustdoctest") => BinaryKind::DocTest,
@@ -30,10 +31,7 @@ impl BinaryKind {
     }
 }
 
-pub fn run_with_timeout(
-    command: &mut Command,
-    timeout: Duration,
-) -> Result<ExitStatus, RunError> {    
+pub fn run_with_timeout(command: &mut Command, timeout: Duration) -> Result<ExitStatus, RunError> {
     let mut child = command.spawn().map_err(|error| RunError::Io {
         context: IoErrorContext::Command {
             command: format!("{:?}", command),
@@ -46,7 +44,9 @@ pub fn run_with_timeout(
     {
         None => {
             child.kill().map_err(context(IoErrorContext::KillProcess))?;
-            child.wait().map_err(context(IoErrorContext::WaitForProcess))?;
+            child
+                .wait()
+                .map_err(context(IoErrorContext::WaitForProcess))?;
             Err(RunError::TimedOut)
         }
         Some(exit_status) => Ok(exit_status),
