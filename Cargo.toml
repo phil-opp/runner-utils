@@ -1,0 +1,13 @@
+[package]
+name = "runner-utils"
+version = "0.0.1"
+authors = ["Philipp Oppermann <dev@phil-opp.com>"]
+edition = "2018"
+license = "MIT/Apache-2.0"
+description = "Provides utility functions for cargo runner crates"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+thiserror = "1.0.20"
+wait-timeout = "0.2.0"
